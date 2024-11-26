@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto C.B.C.</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+            position: relative;
+        }
+        .glass {
+            width: 120px;
+            height: 240px;
+            border: 2px solid #000;
+            border-radius: 15px;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .ingredient {
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            transition: height 0.3s, background-color 0.3s;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        .controls button {
+            margin: 5px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .controls button.add {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .controls button.remove {
+            background-color: #f44336;
+            color: white;
+        }
+        .controls button:hover {
+            transform: scale(1.05);
+        }
+        .price {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        .sidebar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 220px;
+            height: 100%;
+            background-color: #fff;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .sidebar h2 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .sidebar ul li:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Proyecto C.B.C.</h1>
+        <div class="glass" id="glass">
+            <!-- Ingredients will be added here -->
+        </div>
+        <div class="controls">
+            <button class="add" onclick="addIngredient()">Agregar Ingrediente</button>
+            <button class="remove" onclick="removeIngredient()">Quitar Ingrediente</button>
+        </div>
+        <div class="price" id="price">Precio Total: $0</div>
+    </div>
+    <div class="sidebar">
+        <h2>Ingredientes Disponibles</h2>
+        <ul id="ingredient-list">
+            <!-- Ingredient list will be populated here -->
+        </ul>
+    </div>
+
+    <script>
+        let ingredientCount = 0;
+        let totalPrice = 0;
+        const ingredients = [
+            { name: 'Ingrediente 1', price: 10 },
+            { name: 'Ingrediente 2', price: 15 },
+            { name: 'Ingrediente 3', price: 20 },
+            { name: 'Ingrediente 4', price: 25 },
+            { name: 'Ingrediente 5', price: 30 }
+        ];
+
+        function addIngredient() {
+            if (ingredientCount < 5) {
+                const ingredient = ingredients[ingredientCount];
+                ingredientCount++;
+                totalPrice += ingredient.price;
+                const glass = document.getElementById('glass');
+                const ingredientDiv = document.createElement('div');
+                ingredientDiv.className = 'ingredient';
+                ingredientDiv.style.height = (ingredientCount * 20) + '%';
+                ingredientDiv.style.backgroundColor = getRandomColor();
+                ingredientDiv.innerText = ingredient.name + ' - $' + ingredient.price;
+                glass.appendChild(ingredientDiv);
+                updatePrice();
+            }
+        }
+
+        function removeIngredient() {
+            const glass = document.getElementById('glass');
+            if (glass.lastChild) {
+                const ingredient = ingredients[ingredientCount - 1];
+                totalPrice = Math.max(0, totalPrice - ingredient.price);
+                glass.removeChild(glass.lastChild);
+                ingredientCount--;
+                updatePrice();
+            }
+        }
+
+        function updatePrice() {
+            const priceDiv = document.getElementById('price');
+            priceDiv.innerText = 'Precio Total: $' + totalPrice;
+        }
+
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const ingredientList = document.getElementById('ingredient-list');
+            ingredients.forEach((ingredient, index) => {
+                const listItem = document.createElement('li');
+                listItem.innerText = `${ingredient.name} - $${ingredient.price}`;
+                listItem.onclick = () => selectIngredient(index);
+                ingredientList.appendChild(listItem);
+            });
+        });
+
+        function selectIngredient(index) {
+            if (ingredientCount < 5) {
+                const ingredient = ingredients[index];
+                ingredientCount++;
+                totalPrice += ingredient.price;
+                const glass = document.getElementById('glass');
+                const ingredientDiv = document.createElement('div');
+                ingredientDiv.className = 'ingredient';
+                ingredientDiv.style.height = (ingredientCount * 20) + '%';
+                ingredientDiv.style.backgroundColor = getRandomColor();
+                ingredientDiv.innerText = ingredient.name + ' - $' + ingredient.price;
+                glass.appendChild(ingredientDiv);
+                updatePrice();
+            }
+        }
+    </script>
+</body>
+</html>
